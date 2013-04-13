@@ -1,0 +1,70 @@
+#!/usr/bin/perl
+
+$minlat = -90;
+$minlon = -180;
+$maxlat = 270;
+$maxlon = 180;
+
+print "1 setlinecap\n";
+
+while (<>) {
+	chomp;
+	@fields = split(/ /);
+	$strength = $fields[0];
+	shift @fields;
+
+	for ($i = 0; $i < $#fields; $i++) {
+		$a = $fields[$i];
+		$b = $fields[$i + 1];
+		if ($b < $a) {
+			$a = $fields[$i + 1];
+			$b = $fields[$i];
+		}
+
+		$count{"$a,$b"} += $strength;
+
+		if ($count{"$a,$b"} > $max) {
+			$max = $count{"$a,$b"};
+		}
+	}
+}
+
+for $seg (keys(%count)) {
+	($lat1, $lon1, $lat2, $lon2) = split(/,/, $seg);
+	$thick = $count{$seg};
+
+	printf("%.3f setlinewidth ", 3 * $thick / $max);
+
+	$lond = abs($lon2 - $lon1);
+	if (abs($lon2 + 360 - $lon1) < $lond) {
+		printf("%.3f %.3f moveto %.3f %.3f lineto stroke\n",
+			($lon1 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat1 - $minlat) * 612 / ($maxlat - $minlat),
+			($lon2 + 360 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat2 - $minlat) * 612 / ($maxlat - $minlat));
+
+		printf("%.3f %.3f moveto %.3f %.3f lineto stroke\n",
+			($lon1 - 360 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat1 - $minlat) * 612 / ($maxlat - $minlat),
+			($lon2 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat2 - $minlat) * 612 / ($maxlat - $minlat));
+	} elsif (abs($lon1 + 360 - $lon2) < $lond) {
+		printf("%.3f %.3f moveto %.3f %.3f lineto stroke\n",
+			($lon1 + 360 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat1 - $minlat) * 612 / ($maxlat - $minlat),
+			($lon2 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat2 - $minlat) * 612 / ($maxlat - $minlat));
+
+		printf("%.3f %.3f moveto %.3f %.3f lineto stroke\n",
+			($lon1 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat1 - $minlat) * 612 / ($maxlat - $minlat),
+			($lon2 - 360 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat2 - $minlat) * 612 / ($maxlat - $minlat));
+	} else {
+		printf("%.3f %.3f moveto %.3f %.3f lineto stroke\n",
+			($lon1 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat1 - $minlat) * 612 / ($maxlat - $minlat),
+			($lon2 - $minlon) * 612 / ($maxlon - $minlon),
+			($lat2 - $minlat) * 612 / ($maxlat - $minlat));
+	}
+}

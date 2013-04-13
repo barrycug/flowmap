@@ -119,11 +119,11 @@ void addneighbor(int i, int j, double dist) {
 	points[i].neighborcount++;
 }
 
-void printPath(int start, int dest, int strength) {
+void printPath(int start, int dest) {
 	int i = start;
 
 	while (i != USHRT_MAX) {
-		printf("%.6f,%.6f/%d %d\n", points[i].lat, points[i].lon, strength, i);
+		printf("%.6f,%.6f ", points[i].lat, points[i].lon);
 		i = GLOBAL_NEXT(i, dest);
 
 		if (i == dest) {
@@ -131,8 +131,7 @@ void printPath(int start, int dest, int strength) {
 		}
 	}
 
-	printf("#\n");
-	printf("ERROR found ourselves at %d\n", i);
+	printf("\nERROR found ourselves at %d\n", i);
 }
 
 void dijkstra(int s, int dest) {
@@ -242,9 +241,8 @@ void route(double lat1, double lon1, double lat2, double lon2, int strength) {
 	int two = findclosest(lat2, lon2, NULL);
 
 	if (one == two) {
-		printf("%.6f,%.6f start nothing\n", lat1, lon1);
-		printf("%.6f,%.6f end nothing\n", lat2, lon2);
-		printf("#\n");
+		printf("%d ", strength);
+		printf("%.6f,%.6f\n", lat1, lon1);
 		return;
 	}
 
@@ -261,10 +259,10 @@ void route(double lat1, double lon1, double lat2, double lon2, int strength) {
 		// fprintf(stderr, "know how to get from %d to %d: %d\n", one, two, next);
 	}
 
-	printf("%.6f,%.6f start\n", lat1, lon1);
-	printPath(one, two, strength);
-	printf("%.6f,%.6f end\n", lat2, lon2);
-	printf("#\n");
+	printf("%d ", strength);
+	printf("%.6f,%.6f ", lat1, lon1);
+	printPath(one, two);
+	printf("%.6f,%.6f\n", lat2, lon2);
 	fflush(stdout);
 }
 
