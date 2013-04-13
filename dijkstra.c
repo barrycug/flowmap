@@ -135,46 +135,11 @@ void printPath(int start, int dest, int strength) {
 	printf("ERROR found ourselves at %d\n", i);
 }
 
-void dijkstra(int s, int dest, int thorough) {
+void dijkstra(int s, int dest) {
 	int i;
 	int visited[npoint];
 	int prev[npoint];
 	int remaining = 0;
-
-	double minlat, minlon, maxlat, maxlon;
-
-	if (points[s].lat < points[dest].lat) {
-		minlat = points[s].lat;
-		maxlat = points[dest].lat;
-	} else {
-		minlat = points[dest].lat;
-		maxlat = points[s].lat;
-	}
-
-	if (points[s].lon < points[dest].lon) {
-		minlon = points[s].lon;
-		maxlon = points[dest].lon;
-	} else {
-		minlon = points[dest].lon;
-		maxlon = points[s].lon;
-	}
-
-	double latsize = maxlat - minlat;
-	double lonsize = maxlon - minlon;
-
-	if (latsize < lonsize) {
-		latsize = lonsize;
-	} else {
-		lonsize = latsize;
-	}
-
-	double latcenter = (maxlat + minlat) / 2;
-	double loncenter = (maxlon + minlon) / 2;
-
-	minlat = latcenter - latsize;
-	maxlat = latcenter + latsize;
-	minlon = loncenter - lonsize;
-	maxlon = loncenter + lonsize;
 
 	struct point head, tail;
 	head.prev = NULL;
@@ -191,9 +156,6 @@ void dijkstra(int s, int dest, int thorough) {
                 if (0 && GLOBAL_NEXT(s, i) != USHRT_MAX) {
 			//fprintf(stderr, "already know %d to %d follows %d\n", s, i, GLOBAL_NEXT(s, i));
 			visited[i] = 1;
-		} else if (!thorough && (points[i].lat < minlat || points[i].lat > maxlat ||
-                    points[i].lon < minlon || points[i].lon > maxlon)) {
-                        visited[i] = 1;
                 } else {
 			if (i == s) {
 				points[i].d = 0;
@@ -289,13 +251,7 @@ void route(double lat1, double lon1, double lat2, double lon2, int strength) {
 	int next = GLOBAL_NEXT(one, two);
 
 	if (next == USHRT_MAX) {
-		dijkstra(one, two, 0);
-
-		next = GLOBAL_NEXT(one, two);
-		if (next == USHRT_MAX) {
-			fprintf(stderr, "being thorough for %d to %d!\n", one, two);
-			dijkstra(one, two, 1);
-		}
+		dijkstra(one, two);
 
 		next = GLOBAL_NEXT(one, two);
 		if (next == USHRT_MAX) {
