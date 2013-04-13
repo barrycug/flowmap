@@ -40,9 +40,17 @@ double ptdist(double lat1, double lon1, double lat2, double lon2) {
 	double lond = fabs(lon2 - lon1);
 
 	if (fabs(lon2 + 360 - lon1) < lond) {
+#if 0
+		fprintf(stderr, "%lf,%lf to %lf,%lf better than %lf   %lf\n",
+			lat1, lon1, lat2, lon2 + 360, lat2, lond);
+#endif
 		lond = fabs(lon2 + 360 - lon1);
 	}
 	if (fabs(lon1 + 360 - lon2) < lond) {
+#if 0
+		fprintf(stderr, "%lf,%lf to %lf,%lf better than %lf  %lf\n",
+			lat2, lon2, lat1, lon1 + 360, lat1, lond);
+#endif
 		lond = fabs(lon1 + 360 - lon2);
 	}
 
@@ -75,7 +83,7 @@ int findclosest(double lat, double lon, double *ret) {
 
 double dist(int one, int two) {
         double ret = ptdist(points[one].lat, points[one].lon, points[two].lat, points[two].lon);
-        return ret * ret / sqrt(points[one].strength) / sqrt(points[two].strength);
+        return ret / sqrt(points[one].strength) / sqrt(points[two].strength);
 }
 
 void point(double lat, double lon, int strength) {
