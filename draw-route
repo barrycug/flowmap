@@ -6,6 +6,7 @@ $maxlat = 270;
 $maxlon = 180;
 
 print "1 setlinecap\n";
+print "0 setgray\n";
 
 while (<>) {
 	chomp;
