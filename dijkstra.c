@@ -111,11 +111,11 @@ void addneighbor(int i, int j, double dist) {
 	points[i].neighborcount++;
 }
 
-void printPath(int start, int dest) {
+void printPath(int start, int dest, int strength) {
 	int i = start;
 
 	while (i != USHRT_MAX) {
-		printf("%.6f,%.6f %d\n", points[i].lat, points[i].lon, i);
+		printf("%.6f,%.6f/%d %d\n", points[i].lat, points[i].lon, strength, i);
 		i = GLOBAL_NEXT(i, dest);
 
 		if (i == dest) {
@@ -267,7 +267,7 @@ void dijkstra(int s, int dest, int thorough) {
 }
 
 
-void route(double lat1, double lon1, double lat2, double lon2) {
+void route(double lat1, double lon1, double lat2, double lon2, int strength) {
 	int one = findclosest(lat1, lon1, NULL);
 	int two = findclosest(lat2, lon2, NULL);
 
@@ -298,7 +298,7 @@ void route(double lat1, double lon1, double lat2, double lon2) {
 	}
 
 	printf("%.6f,%.6f start\n", lat1, lon1);
-	printPath(one, two);
+	printPath(one, two, strength);
 	printf("%.6f,%.6f end\n", lat2, lon2);
 	printf("#\n");
 	fflush(stdout);
@@ -307,7 +307,6 @@ void route(double lat1, double lon1, double lat2, double lon2) {
 int main() {
         char s[2000];
 	int sorted = 0;
-	int pt = 0;
 	int did = 0;
 
         while (fgets(s, 2000, stdin)) {
@@ -315,7 +314,7 @@ int main() {
                 double lat1, lon1;
                 double lat2, lon2;
 
-                if (sscanf(s, "route %lf,%lf to %lf,%lf", &lat1, &lon1, &lat2, &lon2) == 4) {
+                if (sscanf(s, "route %lf,%lf %lf,%lf %d", &lat1, &lon1, &lat2, &lon2, &strength) == 5) {
 			if (!sorted) {
 				if (global_next != NULL) {
 					free(global_next);
@@ -331,7 +330,7 @@ int main() {
 				sorted = 1;
 			}
 
-                        route(lat1, lon1, lat2, lon2);
+                        route(lat1, lon1, lat2, lon2, strength);
 			did++;
                 } else if (sscanf(s, "point %lf,%lf %d", &lat1, &lon1, &strength) == 3) {
 			point(lat1, lon1, strength);

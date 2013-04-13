@@ -1,5 +1,13 @@
 #!/bin/sh
 
+cat > /tmp/$$
+
+cat /tmp/$$ |
+grep -v cited |
+awk -F, '{print "point", $3 "," $2 " 1"; print "point", $7 "," $6 " 1"}' |
+sort | uniq
+
+cat /tmp/$$ |
 grep -v cited |
 awk -F, '{print $3, $2; print $7, $6}' |
 sort | uniq |
@@ -36,6 +44,12 @@ awk '{
 			$4 -= 360;
 		}
 
-		print $1 "," $2 " " $3 "," $4;
+		print "link", $1 "," $2 " " $3 "," $4;
 	}
 }'
+
+cat /tmp/$$ |
+grep -v cited |
+awk -F, '{print "route", $3 "," $2, $7 "," $6, $9}'
+
+rm /tmp/$$
